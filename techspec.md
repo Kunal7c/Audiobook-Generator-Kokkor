@@ -72,9 +72,15 @@
 - **Endpoint**: `POST /api/preview`
   - Request JSON: `{"text": str, "voice": str, "lang": str}`
   - Response: WAV file, `Content-Type: audio/wav`, `Content-Disposition: attachment; filename="preview_<hash8>.wav"`; errors: `400` (empty text / unknown voice).
-  - Synthesises **any user text** (not chapters) via the `tts.py` path (KPipeline, 24 kHz mono).
-  - **Stateless**: never touches `job`; own worker thread + small module lock;
-    coexists with a running book job; 409-free by design.
+  - Synthesises **any user text** (not chapters) via `tts.py`:
+    `pipeline = KPipeline(lang_code=lang)` (import from `tts`), then
+    `synthesise_chapter(pipeline, text, voice, out_dir, 0, verbose=False)`
+    → WAV path. Cache `pipeline` per `lang` at module level in `api.py`
+    (`_preview_pipeline: dict[str, KPipeline]`) so it is built once.
+    Rename the produced WAV to `preview_<hash8>.wav` before serving.
+  - **Stateless**: never touches `job`; a plain (sync) endpoint runs in
+    FastAPI's thread pool + one module-level `threading.Lock` serialises
+    preview synthesis; coexists with a running book job; 409-free by design.
   - **Cache**: same `(text, voice, lang)` → same WAV, stored in `preview_cache/`
     (gitignored, key = short hash); serve from cache on hit.
   - Frontend contract rows (ids, §3.4): block inside 02·Settings card:
