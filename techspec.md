@@ -89,6 +89,8 @@
     `#vp-audio` (`<audio controls>`), `#vp-status` (status line).
     JS in `app.js`: `vpGenerate()` — fetches `POST /api/preview`, sets
     `#vp-audio.src` to a blob URL, plays.
+  - Helper class in `style.css`: `.vp-lab` (panel label). State classes on
+    `#vp-status` (set by JS): `warn` (empty text) · `ok` (success) · `err` (failure).
 - Backend loads: `techspec.md` + `studio/api.py` (+ `tts.py` signatures §3.5 only
   if needed). Frontend loads: `techspec.md` + all three `studio/ui/` files.
 
@@ -108,7 +110,7 @@
 | `console` | 04·Log | terminal-style log |
 | `dirmodal` | folder picker modal | `GET /api/dirs` |
 | `toast` | toast | transient messages |
-| `vp-toggle` … `vp-status` | voice-preview block | §3.3 (build in progress) |
+| `vp-toggle` … `vp-status` | voice-preview block | §3.3 (T1b done 2026-08-27) |
 
 ### 3.5 tts.py public API (must keep working)
 - `AVAILABLE_VOICES: list[str]` (11 voices, §3.2)

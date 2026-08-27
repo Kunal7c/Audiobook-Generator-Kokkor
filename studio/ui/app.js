@@ -320,6 +320,55 @@ function closeDirModal() {
   $("#dirmodal").classList.add("hidden");
 }
 
+/* ---------- voice preview (02 · SETTINGS) ---------- */
+const vp = { url: null };  // current object URL
+
+function vpToggle() {
+  const btn = $("#vp-toggle");
+  const panel = $("#vp-panel");
+  const open = panel.classList.contains("hidden");
+  panel.classList.toggle("hidden", !open);
+  btn.setAttribute("aria-expanded", String(open));
+  btn.textContent = open ? "ADVANCED ▲" : "ADVANCED";
+}
+
+async function vpGenerate() {
+  const text = $("#vp-text").value.trim();
+  const btn = $("#vp-generate");
+  const status = $("#vp-status");
+  const setMsg = (msg, cls) => { status.textContent = msg; status.className = cls || ""; };
+  if (!text) {
+    setMsg("Type some text first — even one line is enough.", "warn");
+    return;
+  }
+  btn.disabled = true;
+  setMsg("Generating…");
+  try {
+    const res = await fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, voice: $("#voice").value, lang: $("#lang").value }),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setMsg("Preview failed — " + (j.detail || res.status), "err");
+      return;
+    }
+    const blob = await res.blob();
+    if (vp.url) URL.revokeObjectURL(vp.url);
+    vp.url = URL.createObjectURL(blob);
+    const audio = $("#vp-audio");
+    audio.src = vp.url;
+    audio.classList.remove("hidden");
+    audio.play().catch(() => {});
+    setMsg("Preview ready — playing.", "ok");
+  } catch (e) {
+    setMsg("Network error — is the server up?", "err");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 /* ---------- stream ---------- */
 function openStream() {
   if (state.es) state.es.close();
@@ -375,6 +424,10 @@ function openStream() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("#dirmodal").classList.contains("hidden")) closeDirModal();
   });
+
+  // voice preview (02 · SETTINGS)
+  $("#vp-toggle").addEventListener("click", vpToggle);
+  $("#vp-generate").addEventListener("click", vpGenerate);
 
   // populate voices
   try {

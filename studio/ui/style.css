@@ -388,3 +388,55 @@
     margin-top: 14px; flex-wrap: wrap;
   }
   .big.small { width: auto; padding: 10px 18px; font-size: 11px; letter-spacing: .22em; }
+
+  /* ---------- voice preview (02 · SETTINGS) ---------- */
+  #vp-toggle {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+    color: var(--mag); background: rgba(200, 77, 255, .06);
+    border: 1px solid rgba(200, 77, 255, .32); border-radius: 4px;
+    padding: 5px 10px; cursor: pointer; transition: all .15s;
+  }
+  #vp-toggle:hover { background: rgba(200, 77, 255, .16); box-shadow: 0 0 12px rgba(200, 77, 255, .28); }
+  #vp-toggle[aria-expanded="true"] {
+    color: var(--cyan); background: rgba(0, 229, 255, .07); border-color: rgba(0, 229, 255, .45);
+  }
+  #vp-panel {
+    margin-top: 12px; margin-bottom: 14px; padding: 14px;
+    border: 1px solid rgba(200, 77, 255, .22); border-radius: 8px;
+    background: rgba(12, 8, 26, .45); backdrop-filter: blur(10px);
+  }
+  .vp-lab {
+    font-family: var(--disp); font-size: 9px; letter-spacing: .24em;
+    color: var(--dim); margin-bottom: 10px;
+  }
+  .vp-lab b { color: var(--mag); font-weight: 700; }
+  #vp-text {
+    font-family: var(--mono); font-size: 13px; color: var(--text);
+    background: rgba(255, 255, 255, .04); border: 1px solid var(--line);
+    border-radius: 6px; padding: 9px 10px; width: 100%;
+    min-height: 72px; resize: vertical;
+  }
+  #vp-text:focus {
+    outline: none; border-color: var(--line-strong);
+    box-shadow: 0 0 14px rgba(0, 229, 255, .12);
+  }
+  #vp-generate {
+    margin-top: 10px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .22em;
+    color: #021018; cursor: pointer; border: none; border-radius: 5px;
+    padding: 9px 20px;
+    background: linear-gradient(90deg, var(--cyan), var(--mag));
+    transition: filter .2s;
+  }
+  #vp-generate:hover:not(:disabled) {
+    filter: brightness(1.15) drop-shadow(0 0 12px rgba(0, 229, 255, .45));
+  }
+  #vp-generate:disabled { filter: grayscale(.6) brightness(.55); cursor: not-allowed; }
+  #vp-audio { width: 100%; height: 40px; margin-top: 12px; }
+  #vp-status {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+    color: var(--dim); margin-top: 10px; min-height: 14px;
+  }
+  #vp-status.warn { color: var(--amber); }
+  #vp-status.ok { color: var(--green); }
+  #vp-status.err { color: var(--red); }

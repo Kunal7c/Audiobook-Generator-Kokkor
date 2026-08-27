@@ -73,6 +73,14 @@
         </label>
         <span id="outAbs" class="dimtxt"></span>
       </div>
+      <button type="button" id="vp-toggle" aria-expanded="false" aria-controls="vp-panel">ADVANCED</button>
+      <div id="vp-panel" class="hidden">
+        <div class="vp-lab"><b>VOICE PREVIEW</b> — type any text, hear it before you commit to a book.</div>
+        <textarea id="vp-text" rows="3" spellcheck="false" placeholder="Once upon a time…"></textarea>
+        <button type="button" id="vp-generate">GENERATE</button>
+        <audio id="vp-audio" controls class="hidden"></audio>
+        <div id="vp-status"></div>
+      </div>
       <button id="startbtn" class="big" disabled>INITIATE SYNTHESIS</button>
     </div>
   </section>
