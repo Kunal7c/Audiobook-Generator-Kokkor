@@ -8,3 +8,6 @@ venv/
 uploads/
 audiobook/
 *.epub
+
+# SSH workaround (broken /etc ssh_config.d symlink)
+.sshcfg/
