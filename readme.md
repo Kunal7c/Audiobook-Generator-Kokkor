@@ -85,10 +85,17 @@ Chapter selection accepts individual numbers, ranges, or a mix:
 
 | File | What it is |
 |---|---|
-| `gui.py` | Web GUI: FastAPI app + embedded single-page UI (no build step) |
+| `gui.py` | Thin shim (~25 lines) → runs the `studio/` package web GUI |
+| `studio/app.py` | FastAPI app instance, dir constants, `/` and `/static` routes |
+| `studio/state.py` | Job lifecycle: `Job`, `log()`, `snapshot()`, worker thread |
+| `studio/api.py` | All `/api` endpoints (book upload, start, stop, snapshot, SSE) |
+| `studio/main.py` | `main()`: `--host` / `--port` argparse + uvicorn entry |
+| `studio/ui/` | Single-page UI: `index.html`, `style.css`, `app.js` (no build step) |
 | `tts.py` | TTS engine + headless CLI (EPUB → chapter WAVs) |
 | `make_test_epub.py` | Generates a small 4-chapter test EPUB (`test_book.epub`) |
 | `test_book.epub` | Tiny test book (generated) |
+| `techspec.md` | Technical reference + live contracts (endpoints / field / id names) |
+| `spec.md` | Local dev tracker (gitignored; techspec.md is the tracked doc) |
 | `uploads/` | Where uploaded EPUBs are stored |
 | `audiobook/` | Default output directory |
 

@@ -7,6 +7,7 @@ venv/
 # Local data
 uploads/
 audiobook/
+preview_cache/
 *.epub
 
 # Local handoff doc (kept out of the repo)
