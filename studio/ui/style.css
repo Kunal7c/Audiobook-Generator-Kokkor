@@ -249,6 +249,8 @@
   .big:hover:not(:disabled) { filter: drop-shadow(0 0 28px rgba(0, 229, 255, 0.6)); }
   .big:active:not(:disabled) { transform: translateY(1px); }
   .big:disabled { filter: grayscale(.7) brightness(.6); cursor: not-allowed; }
+  /* keep a gap above INITIATE SYNTHESIS (sits right under the ADVANCED toggle / preview panel) */
+  #startbtn { margin-top: 14px; }
   .big.danger {
     background: linear-gradient(90deg, var(--red), #ff8a5c);
     filter: drop-shadow(0 0 20px rgba(255, 77, 109, 0.5));
