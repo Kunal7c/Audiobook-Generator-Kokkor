@@ -13,6 +13,8 @@ binds to `127.0.0.1` — no cloud, no account, no telemetry.
   - chapter selection: individual chapters, ranges, `ALL` / `NONE`
   - output location by manual input **or** an in-page folder picker
   - **Abort** mid-job — saves a partial WAV for the in-flight chapter
+  - **Voice preview** (ADVANCED): type any text, hear it in the browser
+    before committing to a full book
   - state survives page refreshes (a running job keeps streaming)
   - dark, futuristic theme (neon cyan/magenta, glassmorphism)
 - **Headless CLI** — the same engine, scriptable
@@ -62,7 +64,8 @@ Then open <http://127.0.0.1:7860> and:
    `ALL` / `NONE` / from–to range).
 2. **02 · Settings** — voice, language (`a` American / `b` British English),
    output directory (type it, or use **▸ BROWSE** to pick a folder), and
-   optionally "keep TTS segments" for debugging.
+   optionally "keep TTS segments" for debugging. **ADVANCED** opens the voice
+   preview — type any text, hit **GENERATE**, and the WAV plays in the page.
 3. **INITIATE SYNTHESIS** — watch the overall/chapter progress and the log.
    **ABORT TRANSMISSION** stops the job and saves a partial WAV for the
    in-flight chapter.
@@ -98,13 +101,15 @@ Chapter selection accepts individual numbers, ranges, or a mix:
 | `spec.md` | Local dev tracker (gitignored; techspec.md is the tracked doc) |
 | `uploads/` | Where uploaded EPUBs are stored |
 | `audiobook/` | Default output directory |
+| `preview_cache/` | Voice-preview WAV cache (gitignored; keyed by text/voice/language) |
 
 ## Notes & limitations
 
 - **One book, one job at a time** (by design) — no queue of multiple books.
 - **No resume** — a stopped job re-runs from the start (the abort path saves a
   partial WAV instead).
-- **No in-UI audio playback** — listen to the generated WAVs with any player.
+- **No in-UI chapter playback** — the generated chapter WAVs are listened to
+  with any player (only the voice preview plays audio in the browser).
 - Large books (1000+ chapters) take hours; the abort button + partial saves
   are the safety net.
 - The web server has no authentication; if you expose it beyond `127.0.0.1`
