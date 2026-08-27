@@ -9,5 +9,8 @@ uploads/
 audiobook/
 *.epub
 
+# Local handoff doc (kept out of the repo)
+/spec.md
+
 # SSH workaround (broken /etc ssh_config.d symlink)
 .sshcfg/
