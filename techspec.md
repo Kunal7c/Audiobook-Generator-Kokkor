@@ -148,3 +148,4 @@
 ## 7 · Verified results
 - 4-chapter test book: first GUI run 91.1 s (cold), 4 WAVs (990/953/1044/875 KB; 20.6/19.9/21.8/18.2 s).
 - Post-refactor e2e (studio/ package): 4 ch done in 10.4 s (warm), 4 WAVs; abort path verified (`stopped`, partial + skipped); `/`, `/static/style.css`, `/static/app.js`, `/api/meta` all OK (2026-08-27).
+- Voice preview (`POST /api/preview`): cold 2.7 s / cache hit 0.007 s byte-identical (same md5), 159 KB mono 24 kHz WAV; empty text + unknown voice → 400 (2026-08-27).

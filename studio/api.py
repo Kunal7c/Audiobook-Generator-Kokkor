@@ -5,16 +5,17 @@
 # `GET /` route and static files live in app.py.
 # ---------------------------------------------------------------------------
 """FastAPI endpoints (verbatim from legacy gui.py L224-405)."""
+import hashlib
 import json
 import threading
 import time
 from pathlib import Path
 
 from fastapi import File, HTTPException, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
-from tts import AVAILABLE_VOICES, get_chapters
+from tts import AVAILABLE_VOICES, get_chapters, KPipeline, synthesise_chapter
 
 from .app import app, BASE_DIR, UPLOAD_DIR
 from .state import job, log, run_job, snapshot
@@ -201,4 +202,56 @@ def api_stream():
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+# --- Voice preview (stateless — techspec §3.3) ----------------------------
+# Never touches `job`: a plain sync endpoint runs in FastAPI's thread pool,
+# one module-level lock serialises preview synthesis, and the WAV is cached
+# in preview_cache/ (project root) so repeat requests are served instantly.
+PREVIEW_CACHE_DIR = BASE_DIR / "preview_cache"
+_preview_lock = threading.Lock()
+_preview_pipeline: dict[str, KPipeline] = {}
+
+
+class PreviewReq(BaseModel):
+    text: str
+    voice: str
+    lang: str
+
+
+@app.post("/api/preview")
+def api_preview(req: PreviewReq):
+    """Synthesise arbitrary user text (not chapters) and return the WAV."""
+    if not req.text.strip():
+        raise HTTPException(400, "Text must not be empty.")
+    if req.voice not in AVAILABLE_VOICES:
+        raise HTTPException(400, f"Unknown voice: {req.voice}")
+    if req.lang not in ("a", "b"):
+        raise HTTPException(400, "Language must be 'a' or 'b'.")
+
+    filename = (
+        "preview_"
+        + hashlib.sha1(f"{req.text}|{req.voice}|{req.lang}".encode()).hexdigest()[:8]
+        + ".wav"
+    )
+    cache_path = PREVIEW_CACHE_DIR / filename
+
+    if not cache_path.is_file():
+        with _preview_lock:
+            pipeline = _preview_pipeline.get(req.lang)
+            if pipeline is None:
+                pipeline = KPipeline(lang_code=req.lang)
+                _preview_pipeline[req.lang] = pipeline
+            tmp_dir = PREVIEW_CACHE_DIR / "tmp"
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+            wav_path = synthesise_chapter(
+                pipeline, req.text, req.voice, tmp_dir, 0, verbose=False
+            )
+            if wav_path is None:
+                raise HTTPException(500, "No audio generated for that text.")
+            Path(wav_path).replace(cache_path)
+            for seg in tmp_dir.glob("seg_*.wav"):
+                seg.unlink(missing_ok=True)
+
+    return FileResponse(cache_path, media_type="audio/wav", filename=filename)
 
